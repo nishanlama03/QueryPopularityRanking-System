@@ -1,10 +1,12 @@
+
 import pandas as pd
 import numpy as np 
 import os
 import json
 import scipy.stats as stats
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt 
 import seaborn as sns
+sns.set_theme()
 
 
 #from sklearn.model_selection import train_test_split
@@ -13,12 +15,10 @@ import seaborn as sns
 # Model: Linear Regression
 google_data = os.path.join(os.getcwd(), 'Data', 'queryData.csv')
 df = pd.read_csv(google_data)
+
+#Explore the data
 print(df.head(10))
-
-
-print(df.head(610))
-
-print("hello")
+print(df.shape)
 
 #Clean the data
 print("-----Missing data-----")
@@ -30,6 +30,21 @@ df_cleaned = df.dropna(subset = ['x__score'])
 print(df_cleaned.head(20))
 print(np.sum(df_cleaned.isnull(), axis = 0))
 
+#Data Visualization
+sns.histplot(data=df_cleaned, x="x__rank")
+
+#Clean the data
+print("-----Missing data-----")
+print(np.sum(df.isnull(), axis = 0))
+
+df_cleaned = df.dropna(subset = ['x__score'])
+#Other possibility: use a linear regression to fill in the missing data
+
+print(df_cleaned.head(20))
+print(np.sum(df_cleaned.isnull(), axis = 0))
+
+#Data Visualization
+sns.histplot(data=df_cleaned, x="x__rank")
 
 #Detecting outliers
 
@@ -59,5 +74,3 @@ df_no_outliers.head()
 print(max(df['x__rank']))
 
 
-#score and rank, -.16
-#week and rank, -0.6 
