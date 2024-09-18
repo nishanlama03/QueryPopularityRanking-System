@@ -42,12 +42,12 @@ print(np.sum(df.isnull(), axis = 0))
 
 df_cleaned = df.dropna(subset = ['x__score'])
 
-# Correlation Values
+# # Correlation Values
 
-df1 = df_cleaned.head(5)
-correlation1 = df1['x__score'].corr(df['x__rank'])
-print(df1)
-print(correlation1)
+# df1 = df_cleaned.head(5)
+# correlation1 = df1['x__score'].corr(df['x__rank'])
+# print(df1)
+# print(correlation1)
 
 #Other possibility: use a linear regression to fill in the missing data
 
