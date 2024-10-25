@@ -19,16 +19,23 @@ print(df.shape)
 
 #Clean the data
 print("-----Missing data-----")
-print(np.sum(df.isnull(), axis = 0))
+nan_count = np.sum(df.isnull(), axis = 0)
 
 # There are very few examples with a value for 'score'
 # Instead of dropping examples with missing values, the below line drops the 'score' feature entirely
-df = df.drop(columns = ['score'], axis = 1)
+# df = df.drop(columns = ['score'], axis = 1)
 
 # Drop dma_name and dma_id
 df = df.drop(columns = ['dma_name', 'dma_id'], axis = 1)
 
 #Other possibility: use a linear regression to fill in the missing data
+
+condition = nan_count != 0
+col_names = nan_count[condition].index
+col_names = list(col_names)
+print(df['score'])
+for i in col_names:
+    df[i].fillna(value = -1, inplace = True)
 
 print(df.head(20))
 print(np.sum(df.isnull(), axis = 0))
