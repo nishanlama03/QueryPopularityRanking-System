@@ -8,6 +8,8 @@ import gc
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import GridSearchCV
+from sklearn.tree import DecisionTreeRegressor
 
 #from sklearn.model_selection import train_test_split
 #from sklearn.metrics import mean_sequared_error, r2_score
@@ -118,11 +120,27 @@ X = df.drop(columns = ['rank'], axis = 1)
 # Split training and testing data
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 42)
 
-# Train a simple linear model
-model = LinearRegression()
-model.fit(X_train, y_train)
+# # Train a simple linear model
+# modelLR = LinearRegression()
+# modelLR.fit(X_train, y_train)
+# # Evaluate on the test set
+# test_score = modelLR.score(X_test, y_test)
+# print("Test R-squared score:", test_score)
 
-# Evaluate on the test set
-test_score = model.score(X_test, y_test)
+modelDT = DecisionTreeRegressor(random_state = 1234)
+
+param_grid = {
+    'criterion': ['friedman_mse'], 
+    'max_depth': [None, 5, 10, 15, 20],
+    'min_samples_leaf': [None, 1, 2, 5, 10]
+}
+
+grid_search = GridSearchCV(estimator = modelDT, param_grid = param_grid, cv = 5, scoring = 'neg_mean_squared_error', verbose = 1, n_jobs = -1)
+print("1")
+grid_search.fit(X_train, y_train)
+print("2")
+best_model = grid_search.best_estimator_
+print("3")
+test_score = modelDT.score(X_test, y_test)
+print("4")
 print("Test R-squared score:", test_score)
-
