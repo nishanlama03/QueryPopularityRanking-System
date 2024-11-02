@@ -144,3 +144,21 @@ print("3")
 test_score = modelDT.score(X_test, y_test)
 print("4")
 print("Test R-squared score:", test_score)
+
+
+# data visualization
+plt.figure(figsize=(10, 6))
+plt.scatter(df['score'], df['rank'], alpha=0.5)
+plt.title("Correlation Between Score and Rank")
+plt.xlabel("Score")
+plt.ylabel("Rank")
+plt.show()
+
+#distribution of rank
+
+plt.figure(figsize=(10, 6))
+sns.histplot(df['rank'], bins=30, kde=True, color='skyblue')
+plt.title("Distribution of Rank")
+plt.xlabel("Rank")
+plt.ylabel("Frequency")
+
