@@ -136,11 +136,126 @@ param_grid = {
 }
 
 grid_search = GridSearchCV(estimator = modelDT, param_grid = param_grid, cv = 5, scoring = 'neg_mean_squared_error', verbose = 1, n_jobs = -1)
-print("1")
 grid_search.fit(X_train, y_train)
-print("2")
 best_model = grid_search.best_estimator_
-print("3")
 test_score = modelDT.score(X_test, y_test)
-print("4")
 print("Test R-squared score:", test_score)
+
+# Convert one-hot encoded columns to numerical values
+bool_columns = df.select_dtypes(include=['bool']).columns.tolist()
+
+
+# Convert boolean columns to integers one at a time (to prevent a memory spike)
+for col in bool_columns:
+   df[col] = df[col].astype(int)  
+
+
+print(df.head())
+
+
+# Standardize feature columns
+label = df['rank']
+scaler = StandardScaler()
+standardized = scaler.fit_transform(df.drop(columns = ['rank'], axis = 1))
+standardized_features = pd.DataFrame(standardized, columns = df.drop(columns = ['rank'], axis = 1).columns)
+standardized_df = pd.concat([standardized_features, label.reset_index(drop = True)], axis = 1)
+df = standardized_df
+print(df.head())
+
+
+# # Assign features and label variables
+# y = df['rank']
+# X = df.drop(columns = ['rank'], axis = 1)
+
+
+# # Split training and testing data
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.3, random_state = 42)
+
+
+# # Train a simple linear model
+# model = LinearRegression()
+# model.fit(X_train, y_train)
+
+
+# # Evaluate on the test set
+# test_score = model.score(X_test, y_test)
+# print("Test R-squared score:", test_score)
+
+
+# Determine the index for the split, e.g., 70% train and 30% test
+split_index = int(len(df) * 0.7)
+
+
+# Split data into training and testing sets based on the sorted order
+X_train, X_test = df.drop(columns=['rank']).iloc[:split_index], df.drop(columns=['rank']).iloc[split_index:]
+y_train, y_test = df['rank'].iloc[:split_index], df['rank'].iloc[split_index:]
+
+
+# Now you can proceed with training and evaluating the model
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+
+# Evaluate on the test set
+test_score = model.score(X_test, y_test)
+print("Test R-squared score:", test_score)
+
+
+# Define the parameter grid for alpha
+param_grid = {'alpha': [0.1, 1.0, 10.0, 100.0]}
+
+# Ridge Regression
+print("Running Grid Search for Ridge Regression...")
+ridge_model = Ridge()
+ridge_grid = GridSearchCV(
+   estimator = ridge_model,
+   param_grid = param_grid,
+   scoring = make_scorer(r2_score),
+   cv=5,  # 5-fold cross-validation
+   n_jobs = -1
+)
+ridge_grid.fit(X_train, y_train)
+
+
+print("Best Ridge Model:", ridge_grid.best_estimator_)
+print("Best Ridge R² Score (Train):", ridge_grid.best_score_)
+ridge_test_r2 = ridge_grid.best_estimator_.score(X_test, y_test)
+print("Ridge R² Score (Test):", ridge_test_r2)
+
+
+# Lasso Regression
+print("\nRunning Grid Search for Lasso Regression...")
+lasso_model = Lasso()
+lasso_grid = GridSearchCV(
+   estimator = lasso_model,
+   param_grid = param_grid,
+   scoring = make_scorer(r2_score),
+   cv = 5,  # 5-fold cross-validation
+   n_jobs = -1
+)
+lasso_grid.fit(X_train, y_train)
+
+
+print("Best Lasso Model:", lasso_grid.best_estimator_)
+print("Best Lasso R² Score (Train):", lasso_grid.best_score_)
+lasso_test_r2 = lasso_grid.best_estimator_.score(X_test, y_test)
+print("Lasso R² Score (Test):", lasso_test_r2)
+
+
+# ElasticNet Regression
+print("\nRunning Grid Search for ElasticNet Regression...")
+elastic_net_model = ElasticNet()
+elastic_net_grid = GridSearchCV(
+   estimator = elastic_net_model,
+   param_grid = param_grid,
+   scoring = make_scorer(r2_score),
+   cv=5,  # 5-fold cross-validation
+   n_jobs = -1
+)
+elastic_net_grid.fit(X_train, y_train)
+
+
+print("Best ElasticNet Model:", elastic_net_grid.best_estimator_)
+print("Best ElasticNet R² Score (Train):", elastic_net_grid.best_score_)
+elastic_net_test_r2 = elastic_net_grid.best_estimator_.score(X_test, y_test)
+print("ElasticNet R² Score (Test):", elastic_net_test_r2)
