@@ -315,3 +315,64 @@ model_rf.fit(X_train, y_train)
 y_pred_rf = model_rf.predict(X_test)
 rmse_rf = mean_squared_error(y_test, y_pred_rf, squared = False)
 print(r2_score(y_test, y_pred_rf))
+
+# Visualizations to enhance data analysis and model evaluation
+
+# 1. Distribution of the `rank` variable
+plt.figure(figsize=(10, 6))
+sns.histplot(data=df, x='rank', kde=True, bins=30, color='blue')
+plt.title('Distribution of Rank', fontsize=16)
+plt.xlabel('Rank', fontsize=14)
+plt.ylabel('Frequency', fontsize=14)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.show()
+
+# 2. Correlation Heatmap
+plt.figure(figsize=(12, 8))
+correlation_matrix = df.corr()
+sns.heatmap(correlation_matrix, annot=True, fmt=".2f", cmap='coolwarm', cbar=True)
+plt.title('Correlation Matrix', fontsize=16)
+plt.show()
+
+# 3. Feature Importance (Decision Tree)
+feature_importance = pd.Series(best_model.feature_importances_, index=X.columns).sort_values(ascending=False)
+plt.figure(figsize=(10, 6))
+feature_importance.plot(kind='bar', color='skyblue')
+plt.title('Feature Importance from Decision Tree', fontsize=16)
+plt.ylabel('Importance', fontsize=14)
+plt.xlabel('Features', fontsize=14)
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.show()
+
+# 4. Time-Series Analysis (Rank Over Time)
+plt.figure(figsize=(12, 6))
+sns.lineplot(data=df, x='week', y='rank', color='orange', linewidth=2)
+plt.title('Rank Over Time (Weeks)', fontsize=16)
+plt.xlabel('Weeks Since 2019-07-07', fontsize=14)
+plt.ylabel('Rank', fontsize=14)
+plt.grid(axis='both', linestyle='--', alpha=0.7)
+plt.show()
+
+# 5. Model Residuals
+y_pred = model.predict(X_test)
+residuals = y_test - y_pred
+
+plt.figure(figsize=(10, 6))
+sns.histplot(residuals, kde=True, bins=30, color='green')
+plt.title('Residuals Distribution (Linear Regression)', fontsize=16)
+plt.xlabel('Residuals', fontsize=14)
+plt.ylabel('Frequency', fontsize=14)
+plt.axvline(x=0, color='red', linestyle='--', label='Zero Residual')
+plt.legend()
+plt.grid(axis='y', linestyle='--', alpha=0.7)
+plt.show()
+
+# 6. Actual vs. Predicted Values
+plt.figure(figsize=(10, 6))
+plt.scatter(y_test, y_pred, alpha=0.6, color='purple')
+plt.title('Actual vs. Predicted Rank', fontsize=16)
+plt.xlabel('Actual Rank', fontsize=14)
+plt.ylabel('Predicted Rank', fontsize=14)
+plt.plot([min(y_test), max(y_test)], [min(y_test), max(y_test)], color='red', linestyle='--')
+plt.grid(axis='both', linestyle='--', alpha=0.7)
+plt.show()
