@@ -14,6 +14,8 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import r2_score, make_scorer
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.metrics import accuracy_score
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_squared_error
 
 
 #from sklearn.model_selection import train_test_split
@@ -202,7 +204,7 @@ test_score = model.score(X_test, y_test)
 print("Simple Regression R² Score (Test):", test_score)
 
 
-# Define the parameter grid for alpha
+# # Define the parameter grid for alpha
 param_grid = {'alpha': [0.1, 1.0, 10.0, 100.0]}
 
 
@@ -244,7 +246,7 @@ lasso_test_r2 = lasso_grid.best_estimator_.score(X_test, y_test)
 print("Lasso R² Score (Test):", lasso_test_r2)
 
 
-# ElasticNet Regression
+# # ElasticNet Regression
 print("\nRunning Grid Search for ElasticNet Regression...")
 elastic_net_model = ElasticNet()
 elastic_net_grid = GridSearchCV(
@@ -263,7 +265,7 @@ elastic_net_test_r2 = elastic_net_grid.best_estimator_.score(X_test, y_test)
 print("ElasticNet R² Score (Test):", elastic_net_test_r2)
 
 
-# DecisionTree Regression
+# # DecisionTree Regression
 modelDT = DecisionTreeRegressor(random_state=1234)
 
 
@@ -293,24 +295,23 @@ print(f"Max Depth: {best_model.max_depth}")
 print(f"Min Samples Leaf: {best_model.min_samples_leaf}")
 print("Test R-squared score:", dt_test_score)
 
-
-print("lol")
-
+# knn_param_grid = dict(n_neighbors = [int(x) for x in np.linspace(2, np.sqrt(X_train.shape[0]), num = 10)])
+# model_knn = KNeighborsRegressor()
+# grid_knn = GridSearchCV(model_knn, knn_param_grid, cv = 5)
+# grid_knn_search = grid_knn.fit(X_train, y_train)
+# best_k = grid_search.best_params_['n_neighbors']
+# best_model = KNeighborsRegressor(best_k)
+# best_model.fit(X_train, y_train)
+# predictions_best_model = best_model.predict(X_test)
+# print(r2_score(y_test, predictions_best_model))
 
 model_knn = KNeighborsClassifier(n_neighbors = 3)
 model_knn.fit(X_train, y_train)
 class_label_predictions = model_knn.predict(X_test)
 print(accuracy_score(y_test, class_label_predictions))
 
-# k = [3, 30, 300]
-# acc_score = []
-
-
-# for i in k:
-#    model_knn = KNeighborsClassifier(n_neighbors = i)
-#    model_knn.fit(X_train, y_train)
-#    class_label_predictions = model_knn.predict(X_test)
-#    acc_score.append(accuracy_score(y_test, class_label_predictions))
-
-
-# print(acc_score)
+model_rf = RandomForestRegressor(max_depth = 3, n_estimators = 10)
+model_rf.fit(X_train, y_train)
+y_pred_rf = model_rf.predict(X_test)
+rmse_rf = mean_squared_error(y_test, y_pred_rf, squared = False)
+print(r2_score(y_test, y_pred_rf))
